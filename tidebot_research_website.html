@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="T.I.D.E.BOT: an Arduino-based semi-autonomous surface vehicle being developed to collect floating shoreline waste in Pachoca, Calapan City." />
+  <title>T.I.D.E.BOT | BioSphere Innovations</title>
+  <style>
+    :root {
+      --navy: #082f3d;
+      --deep: #061f2a;
+      --teal: #0c8b83;
+      --mint: #c8f4e7;
+      --aqua: #eafaf6;
+      --sand: #f5f3eb;
+      --ink: #18323b;
+      --muted: #5c747b;
+      --white: #ffffff;
+      --line: rgba(8, 47, 61, .12);
+      --shadow: 0 18px 50px rgba(8, 47, 61, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--sand);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .nav {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(6, 31, 42, .94); backdrop-filter: blur(14px);
+      color: var(--white); border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 72px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 850; letter-spacing: .04em; }
+    .brand-mark {
+      display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px;
+      background: var(--mint); color: var(--deep); font-size: 20px;
+    }
+    .nav-links { display: flex; gap: 22px; align-items: center; font-size: .91rem; color: #d4e8e7; }
+    .nav-links a:hover { color: var(--mint); }
+    .menu-btn { display: none; border: 1px solid #49616a; color: white; background: transparent; padding: 8px 12px; border-radius: 9px; }
+    .hero {
+      overflow: hidden; position: relative; color: var(--white);
+      background: radial-gradient(circle at 82% 25%, rgba(25, 188, 163, .24), transparent 28%),
+                  linear-gradient(135deg, var(--deep), var(--navy) 58%, #0a625e);
+      padding: 94px 0 88px;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 540px; height: 540px; border: 1px solid rgba(200,244,231,.13);
+      border-radius: 50%; right: -170px; bottom: -300px; box-shadow: 0 0 0 45px rgba(200,244,231,.035), 0 0 0 90px rgba(200,244,231,.025);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 50px; align-items: center; position: relative; z-index: 1; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .17em; font-size: .76rem; font-weight: 800; color: var(--mint); }
+    h1 { font-size: clamp(2.8rem, 7vw, 5.7rem); line-height: .98; letter-spacing: -.055em; margin: 18px 0 24px; }
+    h1 span { color: var(--mint); }
+    .hero p { max-width: 630px; font-size: 1.12rem; color: #d3e7e7; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 19px; border-radius: 12px; font-weight: 750; border: 1px solid transparent; transition: transform .2s, background .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: var(--deep); background: var(--mint); }
+    .btn-outline { border-color: rgba(255,255,255,.34); color: white; }
+    .hero-art {
+      min-height: 330px; border: 1px solid rgba(255,255,255,.18); border-radius: 28px;
+      background: linear-gradient(150deg, rgba(255,255,255,.12), rgba(255,255,255,.035));
+      display: flex; align-items: center; justify-content: center; position: relative; padding: 25px;
+    }
+    .water { position: absolute; left: 8%; right: 8%; height: 70px; border-top: 2px solid rgba(200,244,231,.65); border-radius: 50%; transform: rotate(-5deg); }
+    .water.one { top: 56%; } .water.two { top: 64%; opacity: .45; transform: rotate(4deg); }
+    .bot { position: relative; z-index: 1; width: min(310px, 100%); height: 190px; }
+    .float { position: absolute; bottom: 30px; width: 42%; height: 44px; background: #f5f3eb; border-radius: 50% 50% 18px 18px; box-shadow: inset 0 -8px 0 #d1e1dc; }
+    .float.left { left: 2%; transform: rotate(-4deg); } .float.right { right: 2%; transform: rotate(4deg); }
+    .deck { position: absolute; left: 13%; right: 13%; bottom: 62px; height: 72px; background: var(--teal); border: 5px solid #b8f0df; border-radius: 18px 18px 24px 24px; transform: perspective(180px) rotateX(9deg); }
+    .box-core { position: absolute; left: 33%; right: 33%; bottom: 96px; height: 54px; border-radius: 10px; background: #e7fbf5; border: 4px solid #77cdb9; }
+    .sensor { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--deep); border: 3px solid #b8f0df; bottom: 120px; }
+    .sensor.s1 { left: 24%; } .sensor.s2 { right: 24%; }
+    .net { position: absolute; bottom: 5px; left: 30%; right: 30%; height: 43px; border: 2px dashed #d4eee7; border-top: 0; background: repeating-linear-gradient(0deg, transparent 0 8px, rgba(200,244,231,.32) 9px 10px); }
+    .float-label { position: absolute; bottom: 20px; font-size: .73rem; color: #d8eeeb; }
+    .float-label.left { left: 12%; } .float-label.right { right: 12%; }
+    .section { padding: 82px 0; }
+    .section-white { background: #fff; }
+    .section-aqua { background: var(--aqua); }
+    .section-head { max-width: 720px; margin-bottom: 35px; }
+    .kicker { color: var(--teal); text-transform: uppercase; letter-spacing: .14em; font-weight: 850; font-size: .74rem; }
+    h2 { font-size: clamp(2rem, 4vw, 3.15rem); letter-spacing: -.04em; line-height: 1.12; margin: 9px 0 15px; color: var(--navy); }
+    h3 { color: var(--navy); margin: 0 0 10px; font-size: 1.15rem; }
+    .lead { font-size: 1.08rem; color: var(--muted); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .card { background: white; border: 1px solid var(--line); border-radius: 20px; padding: 25px; box-shadow: 0 8px 24px rgba(8,47,61,.035); }
+    .icon { width: 45px; height: 45px; border-radius: 14px; background: var(--aqua); display: grid; place-items: center; font-size: 1.35rem; margin-bottom: 18px; }
+    .card p { margin-bottom: 0; color: var(--muted); }
+    .callout { border-left: 4px solid var(--teal); background: var(--aqua); padding: 20px 23px; border-radius: 0 14px 14px 0; color: var(--navy); }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; counter-reset: step; }
+    .step { background: white; padding: 22px; border-radius: 18px; border: 1px solid var(--line); counter-increment: step; }
+    .step::before { content: "0" counter(step); display: block; font-weight: 900; color: var(--teal); font-size: 1.55rem; margin-bottom: 14px; }
+    .step p { color: var(--muted); font-size: .95rem; margin-bottom: 0; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+    .tag { background: var(--aqua); color: var(--navy); border: 1px solid #d0eee6; border-radius: 999px; padding: 7px 11px; font-size: .83rem; font-weight: 700; }
+    .metric { background: var(--navy); color: white; border-radius: 20px; padding: 25px; }
+    .metric strong { display: block; color: var(--mint); font-size: 1.55rem; margin-bottom: 7px; }
+    .metric p { margin: 0; color: #d0e3e4; font-size: .95rem; }
+    .team-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+    .person { padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: white; font-weight: 700; }
+    .notice { font-size: .9rem; color: var(--muted); }
+    .footer { padding: 34px 0; background: var(--deep); color: #d3e7e7; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 20px; align-items: center; }
+    .footer small { color: #9bb9bd; }
+    .backtop { color: var(--mint); font-weight: 750; }
+    @media (max-width: 820px) {
+      .hero-grid, .grid-2 { grid-template-columns: 1fr; }
+      .hero { padding: 65px 0; }
+      .hero-art { min-height: 285px; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .team-list { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; position: absolute; top: 72px; left: 0; right: 0; background: var(--deep); padding: 20px; flex-direction: column; align-items: flex-start; }
+      .nav-links.open { display: flex; }
+      .menu-btn { display: block; }
+    }
+    @media (max-width: 540px) {
+      .wrap { width: min(100% - 28px, 1120px); }
+      .grid-3, .steps, .team-list { grid-template-columns: 1fr; }
+      .section { padding: 60px 0; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#home" aria-label="T.I.D.E.BOT home">
+        <span class="brand-mark">≈</span><span>T.I.D.E.BOT</span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks">Menu ☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="#about">About</a><a href="#problem">The Problem</a><a href="#system">The Robot</a>
+        <a href="#method">Methodology</a><a href="#evaluation">Evaluation</a><a href="#team">Researchers</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">BioSphere Innovations · STEM Research 2026–2027</div>
+          <h1>Cleaner shores.<br /><span>Smarter solutions.</span></h1>
+          <p><strong>T.I.D.E.BOT</strong> (Trash Inspection and Debris Extraction Bot) is an Arduino-based semi-autonomous surface vehicle being developed to collect floating solid waste near the shoreline of Pachoca, Calapan City, Oriental Mindoro.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#about">Explore the Research ↓</a>
+            <a class="btn btn-outline" href="#system">How It Works</a>
+          </div>
+        </div>
+        <div class="hero-art" role="img" aria-label="Illustration of a small floating waste-collection robot">
+          <div class="water one"></div><div class="water two"></div>
+          <div class="bot">
+            <div class="float left"></div><div class="float right"></div>
+            <div class="deck"></div><div class="box-core"></div>
+            <div class="sensor s1"></div><div class="sensor s2"></div><div class="net"></div>
+          </div>
+          <span class="float-label left">Buoyant hull</span><span class="float-label right">Collection net</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="about">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Project overview</div>
+          <h2>Engineering a practical response to floating waste</h2>
+          <p class="lead">This research focuses on the design, development, and performance evaluation of a small surface vehicle intended to complement shoreline cleanup activities. It combines accessible robotics components with principles from physics and biology.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card"><div class="icon">🌊</div><h3>Research Locale</h3><p>Pachoca, Calapan City, Oriental Mindoro, where the study will examine the collection of floating solid waste near the shoreline.</p></article>
+          <article class="card"><div class="icon">🛠️</div><h3>Design Approach</h3><p>A product-development and experimental evaluation approach will be used to build, test, and assess the prototype under controlled and field conditions.</p></article>
+          <article class="card"><div class="icon">♻️</div><h3>Intended Contribution</h3><p>A student-built, affordable technology concept that may support community cleanup efforts. It is designed to complement, not replace, existing waste-management programs.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-aqua" id="problem">
+      <div class="wrap grid-2">
+        <div>
+          <div class="kicker">The problem</div>
+          <h2>Floating waste does not stop at the shoreline</h2>
+          <p>Plastic bottles, sachets, food packaging, and wrappers can accumulate in coastal waters. These materials can affect aquatic organisms and the condition of local waterways. T.I.D.E.BOT explores whether a small, semi-autonomous vehicle can help collect suitable floating solid waste in a defined test area.</p>
+          <div class="callout"><strong>Research focus:</strong> Can the prototype collect floating solid waste while maintaining stable flotation, usable propulsion, obstacle detection, and safe operation?</div>
+        </div>
+        <div>
+          <div class="metric"><strong>Primary goal</strong><p>Design, develop, and evaluate T.I.D.E.BOT using accessible materials for floating-waste collection near Pachoca's shoreline.</p></div>
+          <div style="height:14px"></div>
+          <div class="metric"><strong>Scope</strong><p>Small-scale collection of suitable floating solid waste in the selected coastal test area. Microplastics, dissolved pollutants, and water-quality treatment are outside the stated scope.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="system">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">The prototype</div>
+          <h2>How T.I.D.E.BOT is designed to work</h2>
+          <p class="lead">The Arduino Uno processes distance readings from two ultrasonic sensors and controls the propeller-driven motors. As the vehicle moves, floating waste is guided into an integrated collection net.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card"><div class="icon">🧠</div><h3>Arduino Uno R3</h3><p>The main controller. It reads sensor signals and runs the programmed movement logic.</p></article>
+          <article class="card"><div class="icon">📡</div><h3>Dual HC-SR04 Sensors</h3><p>Two ultrasonic sensors provide distance measurements for detecting nearby obstacles. Performance must be tested in the actual operating environment.</p></article>
+          <article class="card"><div class="icon">⚙️</div><h3>L298N Motor Driver</h3><p>Interfaces the controller with two DC geared motors, which rotate the rear propellers to produce thrust and help steer the vehicle.</p></article>
+          <article class="card"><div class="icon">🛟</div><h3>Floating Hull</h3><p>A lightweight structure, planned around floating materials, must support the electronics and the weight of collected waste while remaining stable.</p></article>
+          <article class="card"><div class="icon">🧺</div><h3>Collection Net</h3><p>An integrated nylon-mesh net is intended to retain suitable floating solid waste for later removal and proper disposal.</p></article>
+          <article class="card"><div class="icon">🔋</div><h3>Power and Protection</h3><p>Rechargeable batteries supply power. A waterproof enclosure and insulated connections are needed to protect electronics from water exposure.</p></article>
+        </div>
+        <div class="tag-list">
+          <span class="tag">Archimedes' Principle</span><span class="tag">Newton's Third Law</span>
+          <span class="tag">Fluid Dynamics</span><span class="tag">Ultrasonic Wave Propagation</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="method">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Research methodology</div>
+          <h2>From concept to field evaluation</h2>
+          <p class="lead">The research plan follows a product-development process. The website describes the planned procedure, not completed results.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><h3>Needs assessment</h3><p>Observe the selected shoreline and document suitable floating waste and relevant environmental conditions.</p></article>
+          <article class="step"><h3>Construction</h3><p>Assemble the floating structure, collection net, electronics, sensors, motor driver, and propulsion system.</p></article>
+          <article class="step"><h3>Pre-testing</h3><p>Check flotation, waterproofing, movement, sensor response, and basic operation in a controlled test before field use.</p></article>
+          <article class="step"><h3>Evaluation</h3><p>Conduct approved trials, record observations consistently, and analyze the measured performance.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-aqua" id="evaluation">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Performance evaluation</div>
+          <h2>What the team plans to measure</h2>
+          <p class="lead">The final evaluation should report actual trial data. No collection-efficiency figures or validated performance claims are presented here because verified T.I.D.E.BOT results have not been supplied for this page.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card"><h3>Waste collection</h3><p>Record the amount or count of waste collected per trial, using the same starting conditions and suitable waste types where possible.</p></article>
+          <article class="card"><h3>Obstacle detection</h3><p>Record sensor readings and whether the robot responds as intended when obstacles are encountered.</p></article>
+          <article class="card"><h3>Navigation and runtime</h3><p>Observe movement and steering, battery operating time, and any interruptions during each trial.</p></article>
+          <article class="card"><h3>Mechanical frame</h3><p>Inspect structural stability and the ability to support the device and collected load.</p></article>
+          <article class="card"><h3>Waterproofing</h3><p>Check the enclosure and connections for signs of water ingress before and after testing.</p></article>
+          <article class="card"><h3>Expert evaluation</h3><p>Use the research team's approved checklist to document functionality, safety, reliability, and suitability.</p></article>
+        </div>
+        <p class="notice" style="margin-top:22px"><strong>Data integrity note:</strong> Add tables, charts, photographs, and statistical results only after the team has collected and checked the actual data. Clearly identify the number of trials and the conditions used.</p>
+      </div>
+    </section>
+
+    <section class="section section-white" id="team">
+      <div class="wrap grid-2">
+        <div>
+          <div class="kicker">The researchers</div>
+          <h2>BioSphere Innovations</h2>
+          <p class="lead">A Science, Technology, Engineering, and Mathematics research group developing a community-centered environmental technology concept.</p>
+          <div class="team-list">
+            <div class="person">Nathan Loto</div><div class="person">Jhondrey Dorado</div>
+            <div class="person">Ahlaica Lubad</div><div class="person">Xia Suguitan</div>
+            <div class="person">Michael Fortu</div><div class="person">Jessie Martinez</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kicker">Research details</div>
+          <h3>Project information</h3>
+          <p><strong>Full title</strong><br />Design, Development, and Performance Evaluation of T.I.D.E. BOT: An Arduino-Based Semi-Autonomous Surface Vehicle for Shoreline Waste Collection in Pachoca, Calapan City</p>
+          <p><strong>Institution</strong><br />Divine Word College of Calapan, Inc. · School of Basic Education Senior High School</p>
+          <p><strong>Research period</strong><br />2026–2027</p>
+          <p class="notice">This page is an informational project website. Update it as the prototype, testing, and findings develop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="callout">
+          <strong>Safety and environmental responsibility</strong><br />
+          Field testing should begin only after school and local permissions are secured. Test from a safe, supervised location, stop when weather or water conditions become unsafe, avoid disturbing aquatic life, and remove collected waste for proper disposal.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div><strong>T.I.D.E.BOT</strong><br /><small>BioSphere Innovations · Student Research Project · 2026–2027</small></div>
+      <a class="backtop" href="#home">Back to top ↑</a>
+    </div>
+  </footer>
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+
+    menuBtn.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+      });
+    });
+  </script>
+</body>
+</html>
